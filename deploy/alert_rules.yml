@@ -1,0 +1,100 @@
+groups:
+  - name: iris_classifier_alerts
+    interval: 30s
+    rules:
+      # High error rate alert
+      - alert: HighErrorRate
+        expr: |
+          (sum(rate(iris_api_errors_total[5m])) / sum(rate(iris_api_requests_total[5m]))) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      # High latency alert
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, rate(iris_api_request_duration_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency detected"
+          description: "P95 latency is {{ $value }}s (threshold: 1.0s)"
+
+      # High CPU usage alert
+      - alert: HighCPUUsage
+        expr: iris_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+
+      # High memory usage alert
+      - alert: HighMemoryUsage
+        expr: iris_memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}% (threshold: 85%)"
+
+      # Model not loaded alert
+      - alert: ModelNotLoaded
+        expr: iris_model_loaded == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model failed to load"
+          description: "Model {{ $labels.model_name }} is not loaded"
+
+      # Low RPS alert
+      - alert: LowRPS
+        expr: |
+          sum(rate(iris_api_requests_total[5m])) < 0.1
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low request rate detected"
+          description: "RPS is {{ $value }} (threshold: 0.1)"
+
+      # P99 Latency alert
+      - alert: HighP99Latency
+        expr: |
+          histogram_quantile(0.99, rate(iris_api_request_duration_seconds_bucket[5m])) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High P99 latency detected"
+          description: "P99 latency is {{ $value }}s (threshold: 2.0s)"
+
+      # API Down alert
+      - alert: APIDown
+        expr: |
+          up{job="iris-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Iris API is down"
+          description: "Iris API has been unreachable for more than 1 minute"
+
+      # High error rate (critical threshold)
+      - alert: CriticalErrorRate
+        expr: |
+          (sum(rate(iris_api_errors_total[5m])) / sum(rate(iris_api_requests_total[5m]))) > 0.10
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (critical threshold: 10%)"
+

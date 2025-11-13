@@ -1,0 +1,137 @@
+---
+# Kubernetes Namespace for Iris Classifier
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: iris-classifier
+  labels:
+    name: iris-classifier
+    environment: production
+
+---
+# Resource Quota for namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: iris-classifier-quota
+  namespace: iris-classifier
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: "20Gi"
+    limits.cpu: "20"
+    limits.memory: "40Gi"
+    pods: "50"
+    services: "10"
+    persistentvolumeclaims: "5"
+
+---
+# Network Policy - Allow traffic within namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: iris-classifier-network-policy
+  namespace: iris-classifier
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: iris-classifier
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: iris-classifier
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+    - ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+
+---
+# Service Account for Iris Classifier
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iris-classifier-sa
+  namespace: iris-classifier
+  labels:
+    app: iris-classifier
+
+---
+# Role for Iris Classifier
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: iris-classifier-role
+  namespace: iris-classifier
+spec:
+  rules:
+    - apiGroups: [""]
+      resources: ["configmaps"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["get", "list"]
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get", "list"]
+
+---
+# RoleBinding for Iris Classifier
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: iris-classifier-rolebinding
+  namespace: iris-classifier
+spec:
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: iris-classifier-role
+  subjects:
+    - kind: ServiceAccount
+      name: iris-classifier-sa
+      namespace: iris-classifier
+
+---
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iris-classifier-config
+  namespace: iris-classifier
+  labels:
+    app: iris-classifier
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  METRICS_ENABLED: "true"
+  HEALTH_CHECK_INTERVAL: "30"
+
+---
+# Secret for sensitive data (base64 encoded)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: iris-classifier-secrets
+  namespace: iris-classifier
+  labels:
+    app: iris-classifier
+type: Opaque
+stringData:
+  MLFLOW_TRACKING_URI: "http://mlflow-server:5000"
+  MODEL_REGISTRY_URI: "http://mlflow-server:5000"
+

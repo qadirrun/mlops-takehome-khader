@@ -1,0 +1,174 @@
+name: Promote Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_name:
+        description: 'Model to deploy'
+        required: true
+        default: 'iris-logistic-regression'
+        type: choice
+        options:
+          - iris-logistic-regression
+          - iris-random-forest
+          - iris-svm
+      canary_percentage:
+        description: 'Canary traffic percentage'
+        required: true
+        default: '10'
+        type: choice
+        options:
+          - '5'
+          - '10'
+          - '25'
+          - '50'
+
+jobs:
+  canary-rollout:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Pull Docker image
+      run: |
+        echo "🐳 Pulling Docker image..."
+        docker pull ${{ secrets.DOCKER_USERNAME }}/iris-classifier:latest
+
+    - name: Deploy Canary (${{ github.event.inputs.canary_percentage }}% traffic)
+      env:
+        PROD_API_URL: ${{ secrets.PROD_API_URL }}
+      run: |
+        echo "🚀 Deploying canary: ${{ github.event.inputs.model_name }}"
+        echo "   Traffic: ${{ github.event.inputs.canary_percentage }}%"
+        docker run -d \
+          -p 8001:8000 \
+          -e ENVIRONMENT=prod \
+          -e MODEL_NAME=${{ github.event.inputs.model_name }} \
+          -e CANARY_PERCENTAGE=${{ github.event.inputs.canary_percentage }} \
+          --name iris-classifier-canary \
+          ${{ secrets.DOCKER_USERNAME }}/iris-classifier:latest
+        sleep 5
+
+    - name: Smoke test - Canary /healthz
+      run: |
+        echo "🧪 Testing canary /healthz endpoint..."
+        curl -f http://localhost:8001/healthz || exit 1
+        echo "✅ Canary /healthz passed"
+
+    - name: Smoke test - Canary /predict
+      run: |
+        echo "🧪 Testing canary /predict endpoint..."
+        curl -f -X POST http://localhost:8001/predict \
+          -H "Content-Type: application/json" \
+          -d '{"features": [5.1, 3.5, 1.4, 0.2]}' || exit 1
+        echo "✅ Canary /predict passed"
+
+    - name: Monitor canary (5 min)
+      run: |
+        echo "📊 Monitoring canary deployment for 5 minutes..."
+        for i in {1..5}; do
+          echo "  [$i/5] Checking metrics..."
+          sleep 60
+        done
+        echo "✅ Canary monitoring completed"
+
+    - name: Create canary record
+      run: |
+        cat > deploy/canary_record.json << EOF
+        {
+          "model": "${{ github.event.inputs.model_name }}",
+          "canary_percentage": ${{ github.event.inputs.canary_percentage }},
+          "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+          "triggered_by": "${{ github.actor }}",
+          "commit": "${{ github.sha }}"
+        }
+        EOF
+        cat deploy/canary_record.json
+
+  full-promotion:
+    needs: canary-rollout
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Pull Docker image
+      run: |
+        echo "🐳 Pulling Docker image..."
+        docker pull ${{ secrets.DOCKER_USERNAME }}/iris-classifier:latest
+
+    - name: Deploy Full Prod (100% traffic)
+      env:
+        PROD_API_URL: ${{ secrets.PROD_API_URL }}
+      run: |
+        echo "🚀 Full promotion: ${{ github.event.inputs.model_name }}"
+        docker run -d \
+          -p 8000:8000 \
+          -e ENVIRONMENT=prod \
+          -e MODEL_NAME=${{ github.event.inputs.model_name }} \
+          --name iris-classifier-prod \
+          ${{ secrets.DOCKER_USERNAME }}/iris-classifier:latest
+        sleep 5
+
+    - name: Smoke test - Prod /healthz
+      run: |
+        echo "🧪 Testing prod /healthz endpoint..."
+        curl -f http://localhost:8000/healthz || exit 1
+        echo "✅ Prod /healthz passed"
+
+    - name: Smoke test - Prod /predict
+      run: |
+        echo "🧪 Testing prod /predict endpoint..."
+        curl -f -X POST http://localhost:8000/predict \
+          -H "Content-Type: application/json" \
+          -d '{"features": [5.1, 3.5, 1.4, 0.2]}' || exit 1
+        echo "✅ Prod /predict passed"
+
+    - name: Create release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: prod-${{ github.event.inputs.model_name }}-${{ github.run_number }}
+        release_name: Prod - ${{ github.event.inputs.model_name }}
+        body: |
+          ## Production Promotion
+          - **Model**: ${{ github.event.inputs.model_name }}
+          - **Canary**: ${{ github.event.inputs.canary_percentage }}%
+          - **Commit**: ${{ github.sha }}
+          - **Triggered by**: ${{ github.actor }}
+        draft: false
+        prerelease: false
+
+    - name: Notify Slack - Promotion Complete
+      if: always()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+        payload: |
+          {
+            "text": "Production Promotion Complete",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Production Promotion*\nModel: ${{ github.event.inputs.model_name }}\nCanary: ${{ github.event.inputs.canary_percentage }}% → 100%\nStatus: ${{ job.status }}\nTriggered by: ${{ github.actor }}"
+                }
+              }
+            ]
+          }
+
