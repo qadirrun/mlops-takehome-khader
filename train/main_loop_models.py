@@ -224,7 +224,6 @@ def main():
     print("#" * 70)
 
     # Set MLflow tracking URI to use SQLite
-    import os
     mlflow.set_tracking_uri("sqlite:///mlruns/mlflow.db")
     print(f"\nMLflow Tracking URI: {mlflow.get_tracking_uri()}")
 

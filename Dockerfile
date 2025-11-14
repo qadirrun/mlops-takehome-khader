@@ -18,9 +18,12 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY app/ ./app/
 COPY train/ ./train/
 
-# Create non-root user and directories
+# Create directories with full permissions for training
+RUN mkdir -p /app/mlruns /app/artifacts && \
+    chmod 777 /app/mlruns /app/artifacts
+
+# Create non-root user
 RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app/mlruns /app/artifacts && \
     chown -R appuser:appuser /app
 USER appuser
 
