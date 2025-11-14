@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  test:
+  lint-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,16 +33,20 @@ jobs:
       run: |
         pylint train/*.py app/*.py --disable=all --enable=E,F || true
 
-    - name: Run tests
+    - name: Run unit tests - Training
       run: |
-        python -m pytest tests/ -v --tb=short
+        python -m pytest tests/test_train.py -v --tb=short
+
+    - name: Run unit tests - API
+      run: |
+        python -m pytest tests/test_api.py -v --tb=short
 
     - name: Train models
       run: |
         python train/main_loop_models.py
 
-  build:
-    needs: test
+  build-and-push:
+    needs: lint-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
