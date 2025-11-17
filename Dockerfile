@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY app/ ./app/
 COPY train/ ./train/
 
+COPY artifacts/model.pkl /app/artifacts/model.pkl
 # Create directories with full permissions for training
 RUN mkdir -p /app/mlruns /app/artifacts && \
     chmod 777 /app/mlruns /app/artifacts

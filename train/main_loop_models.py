@@ -7,6 +7,8 @@ Automatically finds and registers the best model.
 import mlflow
 import mlflow.sklearn
 import sys
+import os
+import joblib
 from pathlib import Path
 
 # Add parent directory to path for imports
@@ -131,6 +133,7 @@ def train_model_pipeline(model_config, X_train, X_test, y_train, y_test):
             print(f"Run ID: {run_id}")
 
             return {
+                "model_object": model,
                 "model": model_name,
                 "display_name": display_name,
                 "run_id": run_id,
@@ -213,8 +216,28 @@ def register_best_model(best_result):
         return model_version
 
     except Exception as e:
-        print(f"\n✗ Error registering best model: {e}")
+
+def save_best_model_as_pkl(best_result):
+    """Saves the best model object to a .pkl file."""
+    print("\n" + "=" * 70)
+    print("SAVING BEST MODEL AS PKL")
+    print("=" * 70)
+
+    try:
+        model_object = best_result["model_object"]
+        artifacts_dir = Path(__file__).parent.parent / "artifacts"
+        os.makedirs(artifacts_dir, exist_ok=True)
+        model_path = artifacts_dir / "model.pkl"
+
+        joblib.dump(model_object, model_path)
+
+        print(f"✓ Best model saved to: {model_path}")
+        return str(model_path)
+    except Exception as e:
+        print(f"✗ Error saving model as .pkl: {e}")
         return None
+
+
 
 
 def main():
@@ -273,6 +296,8 @@ def main():
     print(f"  - Run ID: {best_result['run_id']}")
 
     # Register the best model
+    # Save the best model as a .pkl file for the API
+    save_best_model_as_pkl(best_result)
     model_version = register_best_model(best_result)
 
     if model_version:
