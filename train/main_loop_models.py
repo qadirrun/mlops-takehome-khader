@@ -223,8 +223,10 @@ def main():
     print("# MULTI-MODEL TRAINING PIPELINE (LOOP-BASED)")
     print("#" * 70)
 
-    # Set MLflow tracking URI to use SQLite
-    mlflow.set_tracking_uri("sqlite:///mlruns/mlflow.db")
+    # Set MLflow tracking URI to a temporary directory for CI/container runs
+    import tempfile
+    tracking_uri = f"sqlite:///{tempfile.mkdtemp()}/mlflow.db"
+    mlflow.set_tracking_uri(tracking_uri)
     print(f"\nMLflow Tracking URI: {mlflow.get_tracking_uri()}")
 
     # Set experiment once for all models
