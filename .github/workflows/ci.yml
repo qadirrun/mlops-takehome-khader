@@ -48,6 +48,12 @@ jobs:
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
         python train/main_loop_models.py
 
+    - name: Upload model artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: model-artifact
+        path: artifacts/
+
   build-and-push:
     needs: lint-and-test
     runs-on: ubuntu-latest
@@ -58,6 +64,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Download model artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: model-artifact
+        path: .
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
