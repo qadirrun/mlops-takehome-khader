@@ -41,6 +41,11 @@ jobs:
           ${{ secrets.DOCKER_USERNAME }}/iris-classifier:${{ github.sha }}
         sleep 5
 
+
+    - name: Display Docker logs for debugging
+      run: |
+        echo "🔎 Displaying logs for iris-classifier-dev..."
+        docker logs iris-classifier-dev
     - name: Smoke test - /healthz
       run: |
         echo "🧪 Testing /healthz endpoint..."
