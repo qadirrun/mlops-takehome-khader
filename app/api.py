@@ -36,28 +36,34 @@ mlflow_tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "sqlite:///mlruns/mlflow.
 mlflow.set_tracking_uri(mlflow_tracking_uri)
 print(f"MLflow Tracking URI: {mlflow.get_tracking_uri()}")
 
-# Load model
-try:
-    client = mlflow.tracking.MlflowClient()
-    model_uri = f"models:/{MODEL_NAME}/Production"
-    print(f"Loading model from: {model_uri}")
-    model = mlflow.sklearn.load_model(model_uri)
-    MODEL_VERSION = "1.0.0"
-    set_model_loaded(MODEL_NAME, True)
-    print(f"✓ Model loaded successfully: {MODEL_NAME}")
-except Exception as e:
-    print(f"Warning: Could not load model from registry: {e}")
-    model = None
-    MODEL_VERSION = "0.0.0"
-    set_model_loaded(MODEL_NAME, False)
-
+# Global model variable
+model = None
+MODEL_VERSION = "0.0.0"
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup."""
+    """Initialize DB and load model on startup."""
+    global model, MODEL_VERSION
+
+    # Initialize Database
     print("Initializing database...")
     init_db()
     print("✓ Database initialized")
+
+    # Load Model
+    try:
+        client = mlflow.tracking.MlflowClient()
+        model_uri = f"models:/{MODEL_NAME}/Production"
+        print(f"Loading model from: {model_uri}")
+        model = mlflow.sklearn.load_model(model_uri)
+        MODEL_VERSION = "1.0.0"  # Or get from MLflow
+        set_model_loaded(MODEL_NAME, True)
+        print(f"✓ Model loaded successfully: {MODEL_NAME}")
+    except Exception as e:
+        print(f"❌ CRITICAL: Could not load model from registry: {e}")
+        model = None
+        MODEL_VERSION = "0.0.0"
+        set_model_loaded(MODEL_NAME, False)
 
 
 class PredictRequest(BaseModel):
@@ -229,7 +235,11 @@ async def healthz():
 
     Returns the health status of the API and model.
     Used by Kubernetes liveness and readiness probes.
+    Will return a 503 error if the model is not loaded yet.
     """
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded yet")
+
     return {
         "status": "ok",
         "environment": ENVIRONMENT,
