@@ -55,22 +55,22 @@ jobs:
           -d '{"features": [5.1, 3.5, 1.4, 0.2]}' || exit 1
         echo "✅ /predict passed"
 
-    - name: Notify Slack - Dev Deployment
-      if: always()
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-        payload: |
-          {
-            "text": "Dev Deployment Status",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Dev Deployment*\nStatus: ${{ job.status }}\nCommit: ${{ github.sha }}\nTriggered by: ${{ github.actor }}"
-                }
-              }
-            ]
-          }
+    # - name: Notify Slack - Dev Deployment
+    #   if: always()
+    #   uses: slackapi/slack-github-action@v1.24.0
+    #   with:
+    #     webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+    #     payload: |
+    #       {
+    #         "text": "Dev Deployment Status",
+    #         "blocks": [
+    #           {
+    #             "type": "section",
+    #             "text": {
+    #               "type": "mrkdwn",
+    #               "text": "*Dev Deployment*\nStatus: ${{ job.status }}\nCommit: ${{ github.sha }}\nTriggered by: ${{ github.actor }}"
+    #             }
+    #           }
+    #         ]
+    #       }
 

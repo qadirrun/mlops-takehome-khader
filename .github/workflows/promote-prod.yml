@@ -143,22 +143,22 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Notify Slack - Promotion Complete
-      if: always()
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-        payload: |
-          {
-            "text": "Production Promotion Complete",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Production Promotion*\nModel: ${{ github.event.inputs.model_name }}\nCanary: ${{ github.event.inputs.canary_percentage }}% → 100%\nStatus: ${{ job.status }}\nTriggered by: ${{ github.actor }}"
-                }
-              }
-            ]
-          }
+    # - name: Notify Slack - Promotion Complete
+    #   if: always()
+    #   uses: slackapi/slack-github-action@v1.24.0
+    #   with:
+    #     webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+    #     payload: |
+    #       {
+    #         "text": "Production Promotion Complete",
+    #         "blocks": [
+    #           {
+    #             "type": "section",
+    #             "text": {
+    #               "type": "mrkdwn",
+    #               "text": "*Production Promotion*\nModel: ${{ github.event.inputs.model_name }}\nCanary: ${{ github.event.inputs.canary_percentage }}% → 100%\nStatus: ${{ job.status }}\nTriggered by: ${{ github.actor }}"
+    #             }
+    #           }
+    #         ]
+    #       }
 
