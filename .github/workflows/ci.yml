@@ -65,14 +65,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Create artifacts directory
+      run: mkdir -p artifacts
+
     - name: Download model artifact
       uses: actions/download-artifact@v4
       with:
         name: model-artifact
-        path: .
-
-    - name: List files for debugging
-      run: ls -R
+        path: artifacts
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
