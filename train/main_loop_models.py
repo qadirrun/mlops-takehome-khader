@@ -216,6 +216,8 @@ def register_best_model(best_result):
         return model_version
 
     except Exception as e:
+        print(f"\n✗ Error registering best model: {e}")
+        return None
 
 def save_best_model_as_pkl(best_result):
     """Saves the best model object to a .pkl file."""
