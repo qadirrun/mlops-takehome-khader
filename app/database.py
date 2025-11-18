@@ -27,6 +27,48 @@ else:
     DB_NAME = os.getenv("DB_NAME", "iris_logs")
 
 
+def init_sqlite_db():
+    """Initialize SQLite database with the predictions table if it doesn't exist."""
+    if DB_DRIVER != "sqlite":
+        return
+
+    try:
+        conn = sqlite3.connect(SQLITE_PATH)
+        cursor = conn.cursor()
+
+        # Create predictions table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS predictions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                request_id TEXT UNIQUE NOT NULL,
+                model_name TEXT NOT NULL,
+                model_version TEXT NOT NULL,
+                features TEXT NOT NULL,
+                prediction INTEGER NOT NULL,
+                probability REAL NOT NULL,
+                latency_ms REAL NOT NULL,
+                timestamp TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # Create indices
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_request_id ON predictions(request_id)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_timestamp ON predictions(timestamp)
+        """)
+
+        conn.commit()
+        logger.info("✅ SQLite database initialized successfully")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to initialize SQLite database: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
 def get_db_connection():
     """Get a database connection based on the configured driver."""
     if DB_DRIVER == "sqlite":

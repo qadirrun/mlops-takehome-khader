@@ -16,7 +16,7 @@ from app.metrics import (
     track_request, track_prediction, record_prediction,
     record_batch_prediction, set_model_loaded, registry
 )
-from app.database import log_prediction
+from app.database import log_prediction, init_sqlite_db
 
 app = FastAPI(
     title="Iris Classifier API",
@@ -41,7 +41,8 @@ async def startup_event():
     """Initialize DB and load model from .pkl file on startup."""
     global model, MODEL_VERSION
 
-    # Database is now initialized by Alembic in the entrypoint.sh script
+    # Initialize SQLite database for dev/CI (PostgreSQL uses Alembic migrations)
+    init_sqlite_db()
 
     # Load Model from .pkl file
     try:

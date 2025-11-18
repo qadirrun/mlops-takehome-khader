@@ -3,9 +3,14 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Apply database migrations
-echo "Applying database migrations..."
-alembic upgrade head
+# Apply database migrations (only for production with PostgreSQL)
+ENVIRONMENT=${ENVIRONMENT:-dev}
+if [ "$ENVIRONMENT" = "prod" ]; then
+    echo "Applying database migrations (PostgreSQL)..."
+    alembic upgrade head
+else
+    echo "Skipping Alembic migrations (using SQLite for $ENVIRONMENT)"
+fi
 
 # Check if model exists, if not train it
 if [ ! -f "/app/artifacts/model.pkl" ]; then

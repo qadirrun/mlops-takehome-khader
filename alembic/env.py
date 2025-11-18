@@ -28,13 +28,20 @@ target_metadata = Base.metadata
 
 def get_db_url():
     """Construct the database URL from environment variables for consistency."""
-    # We target PostgreSQL for migrations as it's the production environment
-    db_user = os.getenv("DB_USER", "mlflow_user")
-    db_password = os.getenv("DB_PASSWORD", "mlflow_password")
-    db_host = os.getenv("DB_HOST", "postgres")
-    db_port = os.getenv("DB_PORT", "5432")
-    db_name = os.getenv("DB_NAME", "iris_logs")
-    return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    environment = os.getenv("ENVIRONMENT", "dev")
+
+    # Use SQLite for dev/CI environments, PostgreSQL for production
+    if environment != "prod":
+        # SQLite for dev/CI
+        return "sqlite:////tmp/predictions.db"
+    else:
+        # PostgreSQL for production
+        db_user = os.getenv("DB_USER", "mlflow_user")
+        db_password = os.getenv("DB_PASSWORD", "mlflow_password")
+        db_host = os.getenv("DB_HOST", "postgres")
+        db_port = os.getenv("DB_PORT", "5432")
+        db_name = os.getenv("DB_NAME", "iris_logs")
+        return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""

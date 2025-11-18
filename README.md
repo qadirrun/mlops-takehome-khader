@@ -21,11 +21,11 @@ This project demonstrates a **complete MLOps pipeline** for deploying an Iris fl
 
 - **🤖 Machine Learning**: Train 3 models (Logistic Regression, Random Forest, SVM) with MLflow tracking
 - **🚀 FastAPI Service**: Production-ready REST API with 3 replicas and health checks
--[object Object]er Compose**: Complete local development stack with PostgreSQL, Prometheus, Grafana
+- **🐳 Docker Compose**: Complete local development stack with PostgreSQL, Prometheus, Grafana
 - **☸️ Kubernetes**: NGINX Ingress, HPA, RBAC, Blue-Green/Canary deployments
-- **[object Object]itHub Actions with automated dev deploy and manual prod canary
+- **🔄 CI/CD**: GitHub Actions with automated dev deploy and manual prod canary
 - **📊 Monitoring**: Prometheus metrics, Grafana dashboards, 6 alert rules
--[object Object]reSQL**: Prediction logging with request tracking and latency metrics
+- **🐘 PostgreSQL**: Prediction logging with request tracking and latency metrics
 - **🔙 Rollback**: 5 rollback strategies with copy-paste commands
 
 ### 📊 Grafana Dashboard
