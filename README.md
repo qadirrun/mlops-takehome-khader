@@ -24,22 +24,20 @@ This project demonstrates a **complete MLOps pipeline** for deploying an Iris fl
 -[object Object]reSQL**: Prediction logging with request tracking and latency metrics
 - **🔙 Rollback**: 5 rollback strategies with copy-paste commands
 
-### [object Object] Dashboards
+### 📊 Grafana Dashboard
 
-The project includes comprehensive monitoring dashboards for real-time insights:
+The project includes a comprehensive monitoring dashboard, captured in two screenshots to show the full range of available metrics.
 
-#### Dashboard 1: Iris Classifier Metrics
-![Iris Classifier Dashboard](dashboards/dashboard.png)
+#### Comprehensive Monitoring Dashboard (Part 1)
+![Iris Classifier Monitoring Dashboard](dashboards/dashboard.png)
 
-#### Dashboard 2: System Monitoring
+#### Comprehensive Monitoring Dashboard (Part 2)
 ![Iris Classifier Monitoring Dashboard](dashboards/dashboard2.png)
 
 **Dashboard Features:**
-[object Object]t metrics (count, rate, latency P50/P95/P99)
-- 🎯 Prediction metrics (count, latency, distribution)
-- ⚠️ Error rates and[object Object] System metrics (CPU, Memory usage)
-- 🔍 Model status and health
-- 🚨 Active alerts visualization
+- **Real-Time Gauges:** At-a-glance status for RPS, P95 Latency, Error Rate, and CPU Usage.
+- **Historical Trends:** Detailed time-series graphs for Request Rate, Latency Percentiles (P95/P99), Error Rate, and CPU/Memory Usage.
+- **Complete Visibility:** A total of 8 panels provide a complete picture of both application and system health.
 
 ### 🔄 Complete End-to-End Flow
 
