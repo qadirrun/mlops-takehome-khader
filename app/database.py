@@ -58,66 +58,7 @@ def get_db_connection():
         return None
 
 
-def init_db():
-    """Initialize database tables with driver-specific syntax."""
-    conn = get_db_connection()
-    if not conn:
-        logger.warning("Could not initialize database - connection failed")
-        return False
 
-    try:
-        cursor = conn.cursor()
-
-        # --- Get driver-specific table creation SQL ---
-        if DB_DRIVER == "sqlite":
-            # SQLite uses TEXT for JSON and INTEGER PRIMARY KEY for auto-increment
-            create_table_sql = """
-                CREATE TABLE IF NOT EXISTS predictions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    request_id TEXT UNIQUE NOT NULL,
-                    model_name TEXT NOT NULL,
-                    model_version TEXT NOT NULL,
-                    features TEXT NOT NULL,  -- Store as JSON string
-                    prediction INTEGER NOT NULL,
-                    probability REAL NOT NULL,
-                    latency_ms REAL NOT NULL,
-                    timestamp TEXT NOT NULL,
-                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-                );
-            """
-        else: # postgres
-            create_table_sql = """
-                CREATE TABLE IF NOT EXISTS predictions (
-                    id SERIAL PRIMARY KEY,
-                    request_id VARCHAR(255) UNIQUE NOT NULL,
-                    model_name VARCHAR(255) NOT NULL,
-                    model_version VARCHAR(50) NOT NULL,
-                    features FLOAT8[] NOT NULL,
-                    prediction INTEGER NOT NULL,
-                    probability FLOAT NOT NULL,
-                    latency_ms FLOAT NOT NULL,
-                    timestamp TIMESTAMP NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            """
-
-        cursor.execute(create_table_sql)
-
-        # --- Create indexes (syntax is compatible) ---
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_predictions_request_id ON predictions(request_id);")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_predictions_timestamp ON predictions(timestamp);")
-
-        conn.commit()
-        logger.info(f"✓ Database ({DB_DRIVER}) initialized successfully")
-        return True
-    except (psycopg2.Error, sqlite3.Error) as e:
-        logger.error(f"Failed to initialize database: {e}")
-        conn.rollback()
-        return False
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
 
 
 def log_prediction(

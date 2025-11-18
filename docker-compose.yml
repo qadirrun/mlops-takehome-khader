@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=mlflow_password
       - POSTGRES_DB=iris_logs
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

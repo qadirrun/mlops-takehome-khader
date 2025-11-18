@@ -18,12 +18,21 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY app/ ./app/
 COPY train/ ./train/
 
+
+# Copy Alembic configuration
+COPY alembic.ini .
+COPY alembic/ ./alembic/
+
 COPY artifacts/model.pkl /app/artifacts/model.pkl
 # Create directories with full permissions for training
 RUN mkdir -p /app/mlruns /app/artifacts && \
     chmod 777 /app/mlruns /app/artifacts
 
-# Create non-root user
+# Copy and prepare entrypoint
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Create non-root user and set ownership
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 USER appuser
@@ -35,6 +44,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose port
 EXPOSE 8000
 
-# Run API
-CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
 

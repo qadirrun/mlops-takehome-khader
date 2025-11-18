@@ -180,22 +180,31 @@ All predictions are automatically logged to PostgreSQL with the following inform
 - **latency_ms** - Inference latency in milliseconds
 - **timestamp** - When the prediction was made
 
-### Database Schema
+### 🐘 Database Migrations with Alembic
 
-```sql
-CREATE TABLE predictions (
-    id SERIAL PRIMARY KEY,
-    request_id VARCHAR(255) UNIQUE NOT NULL,
-    model_name VARCHAR(255) NOT NULL,
-    model_version VARCHAR(50) NOT NULL,
-    features FLOAT8[] NOT NULL,
-    prediction INTEGER NOT NULL,
-    probability FLOAT NOT NULL,
-    latency_ms FLOAT NOT NULL,
-    timestamp TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+The database schema is managed using **Alembic**, a lightweight database migration tool for SQLAlchemy. This allows for version-controlled, repeatable, and automated schema changes.
+
+**Key Features:**
+- **Automated Migrations**: The `entrypoint.sh` script automatically runs `alembic upgrade head` on container startup, ensuring the database is always up-to-date.
+- **Source of Truth**: The schema is defined in `app/models.py` using SQLAlchemy models, providing a single source of truth.
+- **Version Controlled**: Migration scripts are stored in the `alembic/versions/` directory and checked into source control.
+
+#### How to Create a New Migration
+
+If you change the SQLAlchemy models in `app/models.py` (e.g., add a new column), you can automatically generate a new migration script:
+
+1.  **Ensure services are running:**
+    ```bash
+    docker-compose up -d
+    ```
+
+2.  **Generate the migration script:**
+    ```bash
+    docker exec iris-classifier-api alembic revision --autogenerate -m "Your descriptive migration message"
+    ```
+
+3.  **Review the script:** A new file will be created in `alembic/versions/`. Inspect it to ensure it's correct.
+4.  **Commit the script:** Add the new migration file to your git commit. Migrations will be applied automatically the next time the container starts.
 
 ### API Endpoints
 
