@@ -1,4 +1,8 @@
-# [object Object]Classifier - Production ML Pipeline
+# 🚀 Iris Classifier - Production ML Pipeline
+
+[![CI](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/ci.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/ci.yml)
+[![Deploy Dev](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/deploy-dev.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/deploy-dev.yml)
+[![Promote Prod](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/promote-prod.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/promote-prod.yml)
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![MLflow](https://img.shields.io/badge/MLflow-3.6.0-blue.svg)](https://mlflow.org/)
