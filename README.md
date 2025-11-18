@@ -1,33 +1,56 @@
-# 🚀 Iris Classifier - Production ML Pipeline
+# [object Object]Classifier - Production ML Pipeline
 
-[![CI](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/ci.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/ci.yml)
-[![Deploy Dev](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/deploy-dev.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/deploy-dev.yml)
-[![Promote Prod](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/promote-prod.yml/badge.svg)](https://github.com/qadirrun/mlops-takehome-khader/actions/workflows/promote-prod.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![MLflow](https://img.shields.io/badge/MLflow-3.6.0-blue.svg)](https://mlflow.org/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-blue.svg)](https://kubernetes.io/)
 [![Tests](https://img.shields.io/badge/Tests-23%2F23%20Passing-brightgreen.svg)]()
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://www.docker.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)](https://fastapi.tiangolo.com/)
 
-A complete, production-ready ML pipeline with **FastAPI serving**, **Kubernetes orchestration**, **GitHub Actions CI/CD**, **Prometheus monitoring**, and **automated rollback procedures**.
+A **complete, production-ready ML pipeline** with **FastAPI serving**, **Kubernetes orchestration**, **GitHub Actions CI/CD**, **Prometheus/Grafana monitoring**, **PostgreSQL logging**, and **automated rollback procedures**.
 
 ## 🎯 Overview
 
-**Complete End-to-End Flow:**
+This project demonstrates a **complete MLOps pipeline** for deploying an Iris flower classification model with enterprise-grade infrastructure, monitoring, and deployment strategies.
+
+### 🌟 Key Features
+
+- **🤖 Machine Learning**: Train 3 models (Logistic Regression, Random Forest, SVM) with MLflow tracking
+- **🚀 FastAPI Service**: Production-ready REST API with 3 replicas and health checks
+-[object Object]er Compose**: Complete local development stack with PostgreSQL, Prometheus, Grafana
+- **☸️ Kubernetes**: NGINX Ingress, HPA, RBAC, Blue-Green/Canary deployments
+- **[object Object]itHub Actions with automated dev deploy and manual prod canary
+- **📊 Monitoring**: Prometheus metrics, Grafana dashboards, 6 alert rules
+-[object Object]reSQL**: Prediction logging with request tracking and latency metrics
+- **🔙 Rollback**: 5 rollback strategies with copy-paste commands
+
+### [object Object] Dashboards
+
+The project includes comprehensive monitoring dashboards for real-time insights:
+
+#### Dashboard 1: Iris Classifier Metrics
+![Iris Classifier Dashboard](dashboards/dashboard.png)
+
+#### Dashboard 2: System Monitoring
+![Iris Classifier Monitoring Dashboard](dashboards/dashboard2.png)
+
+**Dashboard Features:**
+[object Object]t metrics (count, rate, latency P50/P95/P99)
+- 🎯 Prediction metrics (count, latency, distribution)
+- ⚠️ Error rates and[object Object] System metrics (CPU, Memory usage)
+- 🔍 Model status and health
+- 🚨 Active alerts visualization
+
+### 🔄 Complete End-to-End Flow
+
 ```
 GitHub Push → CI Pipeline → Train Models → Build Docker → Deploy Dev → Manual Prod Canary → Full Rollout
                                                                                     ↓
                                                                         Prometheus Monitoring
                                                                         Grafana Dashboards
+                                                                        PostgreSQL Logging
                                                                         Alert Rules
 ```
-
-**Key Components:**
-- ✅ **FastAPI Service** - 3 replicas with health checks
-- ✅ **MLflow Pipeline** - Fetch → Train (3 models) → Register → Deploy
-- ✅ **Kubernetes** - NGINX Ingress, HPA, RBAC, Blue-Green/Canary deployments
-- ✅ **GitHub Actions** - CI/CD with auto dev deploy + manual prod canary
-- ✅ **Monitoring** - Prometheus + Grafana + 6 alert rules
-- ✅ **Rollback** - 5 strategies with copy-paste commands
 
 ## 📁 Project Structure
 
