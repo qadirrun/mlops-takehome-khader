@@ -25,6 +25,7 @@ services:
   iris-api:
     build: .
     container_name: iris-classifier-api
+
     ports:
       - "8000:8000"
     environment:
@@ -39,6 +40,7 @@ services:
       - DB_NAME=iris_logs
     volumes:
       - ./mlruns:/app/mlruns
+      - ./artifacts:/app/artifacts
     networks:
       - monitoring
     depends_on:
@@ -50,6 +52,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+
+
 
   # Prometheus
   prometheus:

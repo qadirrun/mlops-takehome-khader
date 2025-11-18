@@ -21,7 +21,7 @@ COPY train/ ./train/
 
 # Copy Alembic configuration
 COPY alembic.ini .
-COPY alembic/ ./alembic/
+COPY alembic/ /app/alembic/
 
 COPY artifacts/model.pkl /app/artifacts/model.pkl
 # Create directories with full permissions for training
