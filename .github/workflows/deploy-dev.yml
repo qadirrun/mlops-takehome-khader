@@ -65,16 +65,18 @@ jobs:
         docker logs iris-classifier-dev
     - name: Wait for container to be healthy
       run: |
-        echo "Waiting for container to start..."
-        for i in {1..20}; do
+        echo "Waiting for container to start (may take longer if training model)..."
+        for i in {1..40}; do
           if curl -s -f http://localhost:8000/healthz > /dev/null; then
-            echo "Container is healthy!"
+            echo "✅ Container is healthy!"
             exit 0
           fi
-          echo "Attempt $i: Container not ready yet. Retrying in 3 seconds..."
-          sleep 3
+          echo "Attempt $i/40: Container not ready yet. Retrying in 5 seconds..."
+          sleep 5
         done
-        echo "Error: Container did not become healthy in time."
+        echo "❌ Error: Container did not become healthy in time."
+        echo "📋 Container logs:"
+        docker logs iris-classifier-dev
         exit 1
 
     - name: Smoke test - /predict

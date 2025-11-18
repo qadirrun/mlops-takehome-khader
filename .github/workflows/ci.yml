@@ -50,6 +50,9 @@ jobs:
       run: |
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
         python train/main_loop_models.py
+        echo "✅ Model training completed"
+        ls -la artifacts/
+        echo "Model file size: $(du -h artifacts/model.pkl)"
 
     - name: Set up Docker Buildx
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'

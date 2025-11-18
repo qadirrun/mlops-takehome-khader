@@ -18,15 +18,16 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY app/ ./app/
 COPY train/ ./train/
 
-
 # Copy Alembic configuration
 COPY alembic.ini .
 COPY alembic/ /app/alembic/
 
-COPY artifacts/model.pkl /app/artifacts/model.pkl
 # Create directories with full permissions for training
 RUN mkdir -p /app/mlruns /app/artifacts && \
     chmod 777 /app/mlruns /app/artifacts
+
+# Copy model artifacts if they exist (optional for CI builds)
+COPY artifacts/ /app/artifacts/ 2>/dev/null || echo "No artifacts to copy, will train on startup"
 
 # Copy and prepare entrypoint
 COPY entrypoint.sh .
