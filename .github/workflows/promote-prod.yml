@@ -31,6 +31,21 @@ jobs:
       contents: read
       packages: read
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: mlflow_user
+          POSTGRES_PASSWORD: mlflow_password
+          POSTGRES_DB: iris_logs
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v4
 
@@ -57,9 +72,29 @@ jobs:
           -e ENVIRONMENT=prod \
           -e MODEL_NAME=${{ github.event.inputs.model_name }} \
           -e CANARY_PERCENTAGE=${{ github.event.inputs.canary_percentage }} \
+          -e DB_HOST=172.17.0.1 \
+          -e DB_USER=mlflow_user \
+          -e DB_PASSWORD=mlflow_password \
+          -e DB_NAME=iris_logs \
           --name iris-classifier-canary \
           ghcr.io/${{ github.repository }}:latest
-        sleep 5
+        sleep 10
+
+    - name: Wait for canary to be healthy
+      run: |
+        echo "⏳ Waiting for canary container to be healthy..."
+        for i in {1..40}; do
+          if curl -s -f http://localhost:8001/healthz > /dev/null; then
+            echo "✅ Canary container is healthy!"
+            exit 0
+          fi
+          echo "Attempt $i/40: Container not ready yet. Retrying in 5 seconds..."
+          sleep 5
+        done
+        echo "❌ Error: Canary container did not become healthy in time."
+        echo "📋 Container logs:"
+        docker logs iris-classifier-canary
+        exit 1
 
     - name: Smoke test - Canary /healthz
       run: |
@@ -105,6 +140,21 @@ jobs:
       contents: write
       packages: read
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: mlflow_user
+          POSTGRES_PASSWORD: mlflow_password
+          POSTGRES_DB: iris_logs
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v4
 
@@ -129,9 +179,29 @@ jobs:
           -p 8000:8000 \
           -e ENVIRONMENT=prod \
           -e MODEL_NAME=${{ github.event.inputs.model_name }} \
+          -e DB_HOST=172.17.0.1 \
+          -e DB_USER=mlflow_user \
+          -e DB_PASSWORD=mlflow_password \
+          -e DB_NAME=iris_logs \
           --name iris-classifier-prod \
           ghcr.io/${{ github.repository }}:latest
-        sleep 5
+        sleep 10
+
+    - name: Wait for prod to be healthy
+      run: |
+        echo "⏳ Waiting for prod container to be healthy..."
+        for i in {1..40}; do
+          if curl -s -f http://localhost:8000/healthz > /dev/null; then
+            echo "✅ Prod container is healthy!"
+            exit 0
+          fi
+          echo "Attempt $i/40: Container not ready yet. Retrying in 5 seconds..."
+          sleep 5
+        done
+        echo "❌ Error: Prod container did not become healthy in time."
+        echo "📋 Container logs:"
+        docker logs iris-classifier-prod
+        exit 1
 
     - name: Smoke test - Prod /healthz
       run: |
