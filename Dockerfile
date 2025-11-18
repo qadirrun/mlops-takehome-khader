@@ -26,9 +26,6 @@ COPY alembic/ /app/alembic/
 RUN mkdir -p /app/mlruns /app/artifacts && \
     chmod 777 /app/mlruns /app/artifacts
 
-# Copy model artifacts if they exist (optional for CI builds)
-COPY artifacts/ /app/artifacts/ 2>/dev/null || echo "No artifacts to copy, will train on startup"
-
 # Copy and prepare entrypoint
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
