@@ -39,9 +39,11 @@ Complete video demonstrations of:
 - 🔙 **Rollback Procedures** and recovery strategies
 - ✅ **Testing & Validation** workflows
 
-### 📊 Grafana Dashboard
+### [object Object]Dashboard
 
 The project includes a comprehensive monitoring dashboard, captured in two screenshots to show the full range of available metrics.
+
+**📖 Grafana JSON:** [`dashboard/iris-classifier-monitoring-dashboard.json`](dashboard/iris-classifier-monitoring-dashboard.json)
 
 #### Comprehensive Monitoring Dashboard (Part 1)
 ![Iris Classifier Monitoring Dashboard](dashboards/dashboard.png)
