@@ -30,16 +30,16 @@ This project demonstrates a **complete MLOps pipeline** for deploying an Iris fl
 
 ### 🎥 Demo Videos
 
-*[object Object] Full Demo Videos on Google Drive](https://drive.google.com/drive/folders/134F-VaTiZNRJRnIAKfgSs1k9nJ6EBbaR?usp=drive_link)**
+**[📺 Watch Full Demo Videos on Google Drive](https://drive.google.com/drive/folders/134F-VaTiZNRJRnIAKfgSs1k9nJ6EBbaR?usp=drive_link)**
 
 Complete video demonstrations of:
 - ☸️ **Deployment Strategies** (Blue-Green, Canary, Rolling Updates)
 - 🔄 **CI/CD Pipeline** in action with GitHub Actions
--[object Object]ring & Alerting** with Prometheus/Grafana
--[object Object]back Procedures** and recovery strategies
+- 📊 **Monitoring & Alerting** with Prometheus/Grafana
+- 🔙 **Rollback Procedures** and recovery strategies
 - ✅ **Testing & Validation** workflows
 
-### [object Object]fana Dashboard
+### 📊 Grafana Dashboard
 
 The project includes a comprehensive monitoring dashboard, captured in two screenshots to show the full range of available metrics.
 
@@ -1062,18 +1062,6 @@ pytest tests/ --cov=app --cov=train --cov-report=html
 | Rollout/Rollback Documentation | ✅ COMPLETE | 5 strategies, 50+ commands |
 | PostgreSQL Prediction Logging | ✅ COMPLETE | Request tracking, latency logging, /logs endpoint |
 | Model Loading (Fixed) | ✅ COMPLETE | Train inside container, correct artifact paths |
-
-## � Next Steps
-
-1. **Start Local Stack** - `docker-compose up -d`
-2. **Run Training** - `docker exec iris-classifier-api python /app/train/main_loop_models.py`
-3. **Test Endpoints** - Use curl or Swagger UI (see API Endpoints section)
-4. **View Prediction Logs** - `curl http://localhost:8000/logs`
-5. **Deploy to Kubernetes** - `kubectl apply -f k8s/`
-6. **Configure Monitoring** - Set up Prometheus scraping
-7. **Setup Alerts** - Configure Slack/Email notifications
-8. **Monitor Metrics** - Check Grafana dashboards
-9. **Practice Rollback** - Test rollback procedures
 
 ## 📄 License
 
