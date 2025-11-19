@@ -28,7 +28,18 @@ This project demonstrates a **complete MLOps pipeline** for deploying an Iris fl
 - **🐘 PostgreSQL**: Prediction logging with request tracking and latency metrics
 - **🔙 Rollback**: 5 rollback strategies with copy-paste commands
 
-### 📊 Grafana Dashboard
+### 🎥 Demo Videos
+
+*[object Object] Full Demo Videos on Google Drive](https://drive.google.com/drive/folders/134F-VaTiZNRJRnIAKfgSs1k9nJ6EBbaR?usp=drive_link)**
+
+Complete video demonstrations of:
+- ☸️ **Deployment Strategies** (Blue-Green, Canary, Rolling Updates)
+- 🔄 **CI/CD Pipeline** in action with GitHub Actions
+-[object Object]ring & Alerting** with Prometheus/Grafana
+-[object Object]back Procedures** and recovery strategies
+- ✅ **Testing & Validation** workflows
+
+### [object Object]fana Dashboard
 
 The project includes a comprehensive monitoring dashboard, captured in two screenshots to show the full range of available metrics.
 
