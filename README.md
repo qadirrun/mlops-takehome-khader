@@ -394,6 +394,72 @@ mlflow ui
 
 ---
 
+## 🎬 **Live Demo: Load Balancing, Rolling Update & Rollback**
+
+Want to see Kubernetes in action? Follow this **5-minute interactive demo** that demonstrates:
+- ✅ **Load balancing** across 3 pods
+- ✅ **Zero-downtime rolling update** from v1 → v2
+- ✅ **Instant rollback** from v2 → v1
+
+**📖 Full Demo Guide:** [`k8s/DEMO_EXPECTED_OUTPUT.md`](k8s/DEMO_EXPECTED_OUTPUT.md)
+
+### Quick Demo Commands
+
+```bash
+# === SETUP ===
+# 1. Deploy v1 (3 replicas)
+kubectl apply -f k8s/demo-deployment.yaml
+kubectl get pods -n iris-classifier -w  # Wait for 3 pods Running, then Ctrl+C
+
+# 2. Create test pod
+kubectl apply -f k8s/test-pod.yaml
+
+# === LOAD BALANCING ===
+# 3. Make 10 requests - watch traffic distributed across 3 pods
+kubectl exec -n iris-classifier test-curl -- sh -c \
+  "for i in 1 2 3 4 5 6 7 8 9 10; do echo '--- Request' \$i '---'; \
+   curl -s http://iris-classifier | grep 'Pod:'; done"
+
+# 4. Show the 3 pods handling requests
+kubectl get pods -n iris-classifier -l app=iris-classifier
+
+# === ROLLING UPDATE (v1 → v2) ===
+# 5. Check current version
+kubectl exec -n iris-classifier test-curl -- curl -s http://iris-classifier
+
+# 6. Deploy v2 with zero downtime
+kubectl apply -f k8s/demo-deployment-v2.yaml
+kubectl get pods -n iris-classifier -w  # Watch pods update one-by-one, then Ctrl+C
+
+# 7. Verify new version
+kubectl exec -n iris-classifier test-curl -- curl -s http://iris-classifier
+
+# === ROLLBACK (v2 → v1) ===
+# 8. Rollback to v1
+kubectl rollout undo deployment/iris-classifier -n iris-classifier
+kubectl get pods -n iris-classifier -w  # Watch rollback, then Ctrl+C
+
+# 9. Verify we're back to v1
+kubectl exec -n iris-classifier test-curl -- curl -s http://iris-classifier
+
+# 10. Show rollout history
+kubectl rollout history deployment/iris-classifier -n iris-classifier
+
+# === CLEANUP ===
+kubectl delete -f k8s/demo-deployment.yaml
+kubectl delete -f k8s/test-pod.yaml
+```
+
+**🎯 What You'll See:**
+- **Load Balancing**: Requests cycle through pods in round-robin (pod1 → pod2 → pod3 → pod1...)
+- **Rolling Update**: New v2 pods start → become Ready → old v1 pods terminate (always 3+ running!)
+- **Rollback**: Complete rollback in ~30 seconds with zero downtime
+- **Version Tracking**: Rollout history shows revisions 2 (v2) and 3 (v1 after rollback)
+
+**📄 See [`k8s/DEMO_EXPECTED_OUTPUT.md`](k8s/DEMO_EXPECTED_OUTPUT.md) for exact expected output of each command!**
+
+---
+
 ## ☸️ Kubernetes Deployment & Load Balancing
 
 ### Architecture
@@ -1008,16 +1074,7 @@ This project is provided as-is for educational and demonstration purposes.
 ---
 
 **Status**: ✅ Production Ready
-**Last Updated**: 2025-11-13
-**Version**: 2.1
+**Last Updated**: 2025-11-19
+**Version**: 2.2
 **Tests**: 23/23 Passing
 **Coverage**: 33%
-
-## 🎉 Recent Updates (v2.1)
-
-- ✅ **PostgreSQL Prediction Logging** - All predictions logged with request_id, model_version, latency_ms, timestamp
-- ✅ **Fixed Model Loading** - Train models inside Docker container to ensure correct artifact paths
-- ✅ **New /logs Endpoint** - Retrieve prediction history from PostgreSQL
-- ✅ **Fresh Start** - Clean environment with proper path resolution
-- ✅ **Database Integration** - PostgreSQL service in docker-compose.yml with health checks
-
