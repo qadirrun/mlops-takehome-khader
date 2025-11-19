@@ -33,17 +33,17 @@ This project demonstrates a **complete MLOps pipeline** for deploying an Iris fl
 **[📺 Watch Full Demo Videos on Google Drive](https://drive.google.com/drive/folders/134F-VaTiZNRJRnIAKfgSs1k9nJ6EBbaR?usp=drive_link)**
 
 Complete video demonstrations of:
-- ☸️ **Deployment Strategies** (Blue-Green, Canary, Rolling Updates)
-- 🔄 **CI/CD Pipeline** in action with GitHub Actions
-- 📊 **Monitoring & Alerting** with Prometheus/Grafana
-- 🔙 **Rollback Procedures** and recovery strategies
-- ✅ **Testing & Validation** workflows
+- ☸️ **[**Deployment Strategies**](https://drive.google.com/file/d/1kBMRMJaQTQE8DwcfLOeORZ0qKE4CXNbN/view?usp=drive_link)** (Blue-Green, Canary, Rolling Updates)
+- 🔄 **[**CI/CD Pipeline**](https://drive.google.com/file/d/1c2Pg8M53tLCkZ45hBjp7P3TUUXNioKmz/view?usp=drive_link)** in action with GitHub Actions
+- 📊 **[**Monitoring & Alerting**](https://drive.google.com/file/d/1dSOPa50k4uw6Mq-llgXGsXYpOFiIeIc0/view?usp=drive_link)** with Prometheus/Grafana
+- 🔙 **[**Kubernetes deployment**](https://drive.google.com/file/d/1tmcxkFpXwNoUWbk3kQDalkUcMMu1oiml/view?usp=drive_link)** K8s load-balanced deployment + rollout
+- ✅ **[**Testing & Validation**](https://drive.google.com/file/d/1ehgWrIaRALnwJmeE0Hner2PltUYyw3af/view?usp=drive_link)** workflows
 
-### [object Object]Dashboard
+### 📊 Grafana Dashboard
 
 The project includes a comprehensive monitoring dashboard, captured in two screenshots to show the full range of available metrics.
 
-**📖 Grafana JSON:** [`dashboard/iris-classifier-monitoring-dashboard.json`](dashboard/iris-classifier-monitoring-dashboard.json)
+**📖 Grafana JSON:** [`dashboards/iris-classifier-monitoring-dashboard.json`](dashboards/iris-classifier-monitoring-dashboard.json)
 
 #### Comprehensive Monitoring Dashboard (Part 1)
 ![Iris Classifier Monitoring Dashboard](dashboards/dashboard.png)
