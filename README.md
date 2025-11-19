@@ -87,8 +87,7 @@ mlflow/
 │   ├── grafana-datasources.yml     # Prometheus datasource
 │   └── grafana-dashboards.yml      # Dashboard provisioning
 │
-├── dashboards/                     # Grafana Dashboards
-│   ├── iris-classifier-dashboard.json
+├── dashboards/                     # Grafana Dashboard
 │   └── iris-classifier-monitoring-dashboard.json
 │
 ├── tests/                          # Unit Tests (23/23 passing)
@@ -727,14 +726,12 @@ iris_cpu_usage_percent
 iris_model_loaded
 ```
 
-### Grafana Dashboards
+### Grafana Dashboard
 
-**Dashboard 1: iris-classifier-dashboard.json**
+**Dashboard: iris-classifier-monitoring-dashboard.json**
 - Request metrics (count, rate, latency)
 - Prediction metrics (count, latency)
 - Error rates and trends
-
-**Dashboard 2: iris-classifier-monitoring-dashboard.json**
 - System metrics (CPU, Memory)
 - Model status
 - Alert status
